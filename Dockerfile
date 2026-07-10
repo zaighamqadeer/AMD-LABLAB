@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Download the quantized Qwen 0.5B model directly into the image
 RUN mkdir -p /app/models && \
-    wget https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf -O /app/models/qwen2.5-0.5b-instruct-q4_k_m.gguf
+    wget -O /app/models/Qwen3.5-0.8B-Q4_K_M.gguf https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/resolve/main/Qwen3.5-0.8B-Q4_K_M.gguf
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt

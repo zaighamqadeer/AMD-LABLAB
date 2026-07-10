@@ -1,13 +1,12 @@
 import os
 from llama_cpp import Llama
 
-# Dynamically find the model whether in Codespaces or Docker
-if os.path.exists("./models/qwen2.5-0.5b-instruct-q4_k_m.gguf"):
-    MODEL_PATH = "./models/qwen2.5-0.5b-instruct-q4_k_m.gguf"
+# Dynamically find the NEW Qwen 3.5 model
+if os.path.exists("./models/Qwen3.5-0.8B-Q4_K_M.gguf"):
+    MODEL_PATH = "./models/Qwen3.5-0.8B-Q4_K_M.gguf"
 else:
-    MODEL_PATH = "/app/models/qwen2.5-0.5b-instruct-q4_k_m.gguf"
+    MODEL_PATH = "/app/models/Qwen3.5-0.8B-Q4_K_M.gguf"
 
-# Initialize the global variable so the function can use it!
 _model = None
 
 def get_local_model():
@@ -25,6 +24,7 @@ def get_local_model():
             print(f"[local_llm] Critical failure loading GGUF: {e}", flush=True)
             return None
     return _model
+
 
 def generate_local(prompt: str, system_prompt="You are a helpful, precise assistant.") -> str:
     llm = get_local_model()
