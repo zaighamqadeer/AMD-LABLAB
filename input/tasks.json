@@ -1,0 +1,14 @@
+[
+  { 
+    "task_id": "boss-01-code", 
+    "prompt": "Identify the bug in this Python function and provide the corrected version: \ndef append_to_list(value, my_list=[]):\n    my_list.append(value)\n    return my_list" 
+  },
+  { 
+    "task_id": "boss-02-logic", 
+    "prompt": "Five cars (Red, Blue, Green, Silver, Black) are parked in a row. The Red car is immediately to the left of the Blue car. The Silver car is parked on the far right. The Black car is immediately to the right of the Green car. If the Blue car is parked in the middle slot, what color is the first car on the far left?" 
+  },
+  { 
+    "task_id": "boss-03-ner", 
+    "prompt": "Extract all named entities and their types from: Dr. Aris Thorne announced that Quantum Dynamics will relocate its headquarters from Neo-Tokyo to the Lunar Prime facility by October 2045." 
+  }
+]
