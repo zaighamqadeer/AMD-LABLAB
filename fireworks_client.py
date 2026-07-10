@@ -11,13 +11,12 @@ def get_fireworks_config():
 def call_fireworks(prompt: str, max_tokens=256, system_prompt="Be precise and concise.") -> str:
     api_key, base_url, models = get_fireworks_config()
     if not api_key or not base_url or not models:
-        print("[fireworks] Missing environment variables.", flush=True)
         return None
     
-    # Organizers suggest the first model in the allowed list is the cheapest
     model_id = models[0]
     
     try:
+        from openai import OpenAI
         client = OpenAI(api_key=api_key, base_url=base_url)
         resp = client.chat.completions.create(
             model=model_id,

@@ -2,14 +2,11 @@ import re
 import ast
 import operator
 from fireworks_client import call_fireworks
+from local_llm import generate_local
 
 SAFE_OPS = {
-    ast.Add: operator.add,
-    ast.Sub: operator.sub,
-    ast.Mult: operator.mul,
-    ast.Div: operator.truediv,
-    ast.Pow: operator.pow,
-    ast.Mod: operator.mod,
+    ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul,
+    ast.Div: operator.truediv, ast.Pow: operator.pow, ast.Mod: operator.mod,
     ast.USub: operator.neg,
 }
 
@@ -30,31 +27,22 @@ def safe_eval(expr):
 def solve_math(prompt: str) -> str:
     prompt_low = prompt.lower()
 
-    # Heuristic 1: Store items percent pattern
-    m = re.search(r"store has (\d+).*?sells (\d+)%.*?and (\d+)\s+more", prompt_low)
-    if m:
-        total = int(m.group(1))
-        pct = int(m.group(2))
-        more = int(m.group(3))
-        remain = total - (total * pct / 100) - more
-        return f"{int(remain)} items remain. Calculation: {total} - {pct}% ({total*pct/100}) - {more} = {int(remain)}."
-
-    # Heuristic 2: Simple percentage
-    m = re.search(r"(\d+)\s*%.*?of\\s*(\d+)", prompt_low)
-    if m:
-        pct = int(m.group(1))
-        total = int(m.group(2))
-        return str(int(total * pct / 100))
-
-    # Heuristic 3: Direct arithmetic statement
-    expr_match = re.search(r"what is ([0-9\+\-\*/\(\) \.%]+)\??", prompt_low)
+    # 1. Generic parsing for direct equations ONLY (e.g., "What is 45 * 2 + 10?")
+    expr_match = re.search(r"([0-9]+(?:\.[0-9]+)?\s*[\+\-\*/]\s*[0-9]+(?:\.[0-9]+)?(?:[\s\+\-\*/0-9\.]+)*)", prompt_low)
     if expr_match:
-        expr = expr_match.group(1).replace("%", "/100*")
-        val = safe_eval(expr)
+        val = safe_eval(expr_match.group(1))
         if val is not None:
             return str(int(val) if float(val).is_integer() else val)
 
-    # CRITICAL FALLBACK: Send to Fireworks API to ensure accuracy gate is passed
-    system_prompt = "You are a calculator. Solve the problem and output ONLY the final numeric answer. Do not include units, markdown, or explanations. Just the number."
-    api_response = call_fireworks(prompt, max_tokens=15, system_prompt=system_prompt)
-    return api_response if api_response else "0"
+    # 2. LOCAL FIRST (0 Tokens)
+    sys_prompt_local = "Solve the problem. Output ONLY the final numeric answer. Nothing else."
+    local_ans = generate_local(prompt, system_prompt=sys_prompt_local)
+    
+    # Validation: If the 0.5B model outputs a clean number, trust it and save the tokens.
+    if local_ans and re.fullmatch(r"-?\d+(?:\.\d+)?", local_ans.strip()):
+        return local_ans.strip()
+
+    # 3. ESCALATE TO API (Token Spend)
+    sys_prompt_api = "Output only the final numeric answer."
+    api_resp = call_fireworks(prompt, max_tokens=10, system_prompt=sys_prompt_api)
+    return api_resp if api_resp else "0"

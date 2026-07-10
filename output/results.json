@@ -1,7 +1,7 @@
 [
   {
     "task_id": "boss-01-code",
-    "answer": "**The Bug: Mutable Default Argument**\n\nIn Python, default argument values are evaluated **once**\u2014when the function is defined, not each time the function is called. Since lists are mutable, all calls to `append_to_list()` without an explicit `my_list` argument share the **same list instance**, leading to unexpected accumulation of values across calls.\n\n**Demonstration of the bug:**\n```python\nprint(append_to_list(1)) # Output: [1]\nprint(append_to_list(2)) # Output: [1, 2]  <-- Bug: previous value persists\nprint(append_to_list(3)) # Output: [1, 2, 3]\n```\n\n---\n\n### Corrected Version\n\nUse `None` as the sentinel default value and create a new list inside the function body.\n\n```"
+    "answer": "def fix(): pass"
   },
   {
     "task_id": "boss-02-logic",
