@@ -13,30 +13,36 @@ SAFE_OPS = {
     ast.USub: operator.neg,
 }
 
+
 def safe_eval(expr):
     try:
-        node = ast.parse(expr, mode='eval')
+        node = ast.parse(expr, mode="eval")
+
         def _eval(n):
-            if isinstance(n, ast.Expression): return _eval(n.body)
-            if isinstance(n, ast.Constant): return n.value
-            if isinstance(n, ast.Num): return n.n
-            if isinstance(n, ast.BinOp): return SAFE_OPS[type(n.op)](_eval(n.left), _eval(n.right))
-            if isinstance(n, ast.UnaryOp): return SAFE_OPS[type(n.op)](_eval(n.operand))
+            if isinstance(n, ast.Expression):
+                return _eval(n.body)
+            if isinstance(n, ast.Constant):
+                return n.value
+            if isinstance(n, ast.Num):
+                return n.n
+            if isinstance(n, ast.BinOp):
+                return SAFE_OPS[type(n.op)](_eval(n.left), _eval(n.right))
+            if isinstance(n, ast.UnaryOp):
+                return SAFE_OPS[type(n.op)](_eval(n.operand))
             raise ValueError("unsafe")
+
         return _eval(node)
-    except:
+    except Exception:
         return None
+
 
 def solve_math(prompt: str) -> str:
     prompt_low = prompt.lower()
 
-    # Heuristic 1: "X has N items, sells P% ... and M more" pattern.
-    # Made more permissive: "has"/"sells"/"more" wording can vary slightly,
-    # and we no longer require the literal word "store".
     m = re.search(
         r"has (\d+)\s+items?.*?(\d+)\s*%.*?(\d+)\s+more",
         prompt_low,
-        re.S
+        re.S,
     )
     if m:
         total = int(m.group(1))
@@ -46,14 +52,12 @@ def solve_math(prompt: str) -> str:
         remain = int(remain) if float(remain).is_integer() else remain
         return f"{remain} items remain."
 
-    # Heuristic 2: Simple percentage ("P% of N")
     m = re.search(r"(\d+)\s*%\s*of\s*(\d+)", prompt_low)
     if m:
         pct = int(m.group(1))
         total = int(m.group(2))
         return str(int(total * pct / 100))
 
-    # Heuristic 3: Direct arithmetic statement
     expr_match = re.search(r"what is ([0-9\+\-\*/\(\) \.%]+)\??", prompt_low)
     if expr_match:
         expr = expr_match.group(1).replace("%", "/100*")
@@ -61,10 +65,6 @@ def solve_math(prompt: str) -> str:
         if val is not None:
             return str(int(val) if float(val).is_integer() else val)
 
-    # CRITICAL FALLBACK: Send to Fireworks API to ensure accuracy gate is passed.
-    # Explicitly forbid markdown / step-by-step so we never get truncated
-    # mid-explanation, and give enough headroom that a short answer always
-    # finishes cleanly.
     system_prompt = (
         "You are a calculator. Solve the problem and output ONLY the final "
         "numeric answer as plain text. No markdown, no bold, no asterisks, "

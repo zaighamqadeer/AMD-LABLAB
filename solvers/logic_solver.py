@@ -5,6 +5,7 @@ from fireworks_client import call_fireworks
 KNOWN_NAMES = ["Sam", "Jo", "Lee", "Alice", "Bob", "Carol", "John", "Maria", "Alex", "Jordan"]
 KNOWN_PETS = ["cat", "dog", "bird", "fish", "rabbit", "hamster"]
 
+
 def solve_logic(prompt: str) -> str:
     low = prompt.lower()
 
@@ -16,9 +17,6 @@ def solve_logic(prompt: str) -> str:
 
     if len(names) >= 3 and len(pets) >= 3:
         constraints = []
-        # Check "does not own" FIRST so it isn't misread as a positive match,
-        # and do NOT use re.I here (case-insensitivity lets [A-Z] match
-        # lowercase letters too, corrupting name capture).
         for sent in prompt.split("."):
             neg = re.search(r"([A-Z][a-z]+)\s+does not own the (\w+)", sent)
             if neg:
@@ -35,11 +33,12 @@ def solve_logic(prompt: str) -> str:
                 if person not in assignment:
                     continue
                 if op == "==" and assignment[person] != pet:
-                    ok = False; break
+                    ok = False
+                    break
                 if op == "!=" and assignment[person] == pet:
-                    ok = False; break
+                    ok = False
+                    break
             if ok:
-                # Figure out which pet is actually being asked about
                 asked_pet = None
                 q = re.search(r"who owns the (\w+)", low)
                 if q:
@@ -50,7 +49,6 @@ def solve_logic(prompt: str) -> str:
                         return f"{person} owns the {target_pet}."
                 return "Solution resolved."
 
-    # CRITICAL FALLBACK: Pass complex relational problems to Fireworks
     anti_yap_prompt = prompt + "\n\nCRITICAL INSTRUCTION: Output ONLY the final answer as a full sentence, e.g. 'Name owns the item.' Do not explain your reasoning."
     api_response = call_fireworks(anti_yap_prompt, max_tokens=20)
     return api_response if api_response else "Constraint logic error."
