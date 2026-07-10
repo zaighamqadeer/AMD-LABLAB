@@ -1,14 +1,10 @@
 [
-  { 
-    "task_id": "boss-01-code", 
-    "prompt": "Identify the bug in this Python function and provide the corrected version: \ndef append_to_list(value, my_list=[]):\n    my_list.append(value)\n    return my_list" 
-  },
-  { 
-    "task_id": "boss-02-logic", 
-    "prompt": "Five cars (Red, Blue, Green, Silver, Black) are parked in a row. The Red car is immediately to the left of the Blue car. The Silver car is parked on the far right. The Black car is immediately to the right of the Green car. If the Blue car is parked in the middle slot, what color is the first car on the far left?" 
-  },
-  { 
-    "task_id": "boss-03-ner", 
-    "prompt": "Extract all named entities and their types from: Dr. Aris Thorne announced that Quantum Dynamics will relocate its headquarters from Neo-Tokyo to the Lunar Prime facility by October 2045." 
-  }
+  { "task_id": "practice-01", "prompt": "What is the capital of Australia, and what body of water is it near?" },
+  { "task_id": "practice-02", "prompt": "A store has 240 items. It sells 15% on Monday and 60 more on Tuesday. How many items remain?" },
+  { "task_id": "practice-03", "prompt": "Classify the sentiment of this review: The battery life is great, but the screen scratches too easily." },
+  { "task_id": "practice-04", "prompt": "Summarize the following in exactly one sentence: The hyper-loop project, initially proposed in 2013, faced severe regulatory hurdles. Despite securing over two billion in private equity, the physical limitations of vacuum tube construction proved insurmountable. As of last quarter, the lead development firm has officially filed for bankruptcy, citing these compounding engineering failures." },
+  { "task_id": "practice-05", "prompt": "Extract all named entities and their types from: Maria Sanchez joined Fireworks AI in Berlin last March." },
+  { "task_id": "practice-06", "prompt": "This function should return the max of a list but has a bug: def get_max(nums): return nums[0]. Find and fix it." },
+  { "task_id": "practice-07", "prompt": "Three friends, Sam, Jo, and Lee, each own a different pet: cat, dog, bird. Sam does not own the bird. Jo owns the dog. Who owns the cat?" },
+  { "task_id": "practice-08", "prompt": "Write a Python function that returns the second-largest number in a list, handling duplicates correctly." }
 ]

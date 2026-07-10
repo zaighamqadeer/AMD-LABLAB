@@ -11,12 +11,13 @@ def get_fireworks_config():
 def call_fireworks(prompt: str, max_tokens=256, system_prompt="Be precise and concise.") -> str:
     api_key, base_url, models = get_fireworks_config()
     if not api_key or not base_url or not models:
+        print("[fireworks] Missing environment variables.", flush=True)
         return None
-    
+
+    # Organizers suggest the first model in the allowed list is the cheapest
     model_id = models[0]
-    
+
     try:
-        from openai import OpenAI
         client = OpenAI(api_key=api_key, base_url=base_url)
         resp = client.chat.completions.create(
             model=model_id,
@@ -27,7 +28,17 @@ def call_fireworks(prompt: str, max_tokens=256, system_prompt="Be precise and co
             max_tokens=max_tokens,
             temperature=0.0,
         )
-        return resp.choices[0].message.content.strip()
+
+        choice = resp.choices[0]
+        content = choice.message.content
+
+        if not content:
+            # Log why we got nothing back — empty response vs length cutoff vs refusal
+            finish_reason = getattr(choice, "finish_reason", "unknown")
+            print(f"[fireworks] empty content, finish_reason={finish_reason}", flush=True)
+            return None
+
+        return content.strip()
     except Exception as e:
         print(f"[fireworks] error: {e}", flush=True)
         return None

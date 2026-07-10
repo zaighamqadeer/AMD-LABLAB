@@ -1,12 +1,17 @@
 import os
+import re
 from llama_cpp import Llama
 
-# Dynamically find the NEW Qwen 3.5 model
-if os.path.exists("./models/Qwen3.5-0.8B-Q4_K_M.gguf"):
-    MODEL_PATH = "./models/Qwen3.5-0.8B-Q4_K_M.gguf"
-else:
-    MODEL_PATH = "/app/models/Qwen3.5-0.8B-Q4_K_M.gguf"
+# Dynamically find the model whether in Codespaces or Docker
+MODEL_FILENAME = "Qwen3.5-0.8B-Q4_K_M.gguf"
 
+_candidates = [
+    f"./models/{MODEL_FILENAME}",
+    f"/app/models/{MODEL_FILENAME}",
+]
+MODEL_PATH = next((p for p in _candidates if os.path.exists(p)), _candidates[-1])
+
+# Initialize the global variable so the function can use it!
 _model = None
 
 def get_local_model():
@@ -25,6 +30,15 @@ def get_local_model():
             return None
     return _model
 
+def _clean_output(text: str) -> str:
+    """Strip <think>...</think> blocks and any stray leftover tags/whitespace."""
+    if not text:
+        return text
+    # Remove complete think blocks (including empty ones)
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.S)
+    # Remove any dangling unmatched think tags just in case generation got cut mid-block
+    text = re.sub(r"</?think>", "", text)
+    return text.strip()
 
 def generate_local(prompt: str, system_prompt="You are a helpful, precise assistant.") -> str:
     llm = get_local_model()
@@ -33,11 +47,12 @@ def generate_local(prompt: str, system_prompt="You are a helpful, precise assist
 
     # Qwen/Llama chat formatting
     formatted_prompt = f"<|im_start|>system\n{system_prompt}<|im_end|>\n<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant\n"
-    
+
     response = llm(
         formatted_prompt,
         max_tokens=100, # Keep outputs short
         stop=["<|im_end|>"],
         temperature=0.0
     )
-    return response['choices'][0]['text'].strip()
+    raw = response['choices'][0]['text'].strip()
+    return _clean_output(raw)

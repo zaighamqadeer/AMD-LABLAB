@@ -1,14 +1,34 @@
 [
   {
-    "task_id": "boss-01-code",
-    "answer": "def fix(): pass"
+    "task_id": "practice-01",
+    "answer": "Australia's capital is Canberra, located near the Great Australian Bight."
   },
   {
-    "task_id": "boss-02-logic",
-    "answer": "<think>\n\n</think>\n\nIf the Blue car is in the middle slot, the first car on the far left must be Red, because the Red car is immediately to the left of the Blue car, and the Silver car is on the far right."
+    "task_id": "practice-02",
+    "answer": "144 items remain."
   },
   {
-    "task_id": "boss-03-ner",
-    "answer": "Entities: Aris Thorne (PERSON), Quantum Dynamics (ORGANIZATION), Neo-Tokyo (ORGANIZATION), October 2045 (DATE)"
+    "task_id": "practice-03",
+    "answer": "Sentiment: Negative. Justification: The review explicitly states that the screen scratches \"too easily,\" which is a significant negative complaint regarding the product's durability and user experience."
+  },
+  {
+    "task_id": "practice-04",
+    "answer": "Despite securing over two billion in private equity, the hyper-loop project's physical limitations and the lead firm's bankruptcy have caused severe regulatory hurdles."
+  },
+  {
+    "task_id": "practice-05",
+    "answer": "Entities: Maria Sanchez (PERSON), Fireworks AI (ORGANIZATION), Berlin (LOCATION), last March (DATE)"
+  },
+  {
+    "task_id": "practice-06",
+    "answer": "The bug is that the function returns the first element instead of the maximum. Use max(nums) instead."
+  },
+  {
+    "task_id": "practice-07",
+    "answer": "Sam owns the cat."
+  },
+  {
+    "task_id": "practice-08",
+    "answer": "def second_largest(nums):\n    unique = list(set(nums))\n    if len(unique) < 2: return None\n    unique.sort()\n    return unique[-2]"
   }
 ]
